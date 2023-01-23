@@ -15,9 +15,6 @@ const getContactById = async (contactId) => {
   const [searchContact] = await contacts.filter(
     (contact) => contact.id === contactId
   );
-  if (searchContact === undefined) {
-    return;
-  }
   return searchContact;
 };
 
@@ -25,7 +22,7 @@ const removeContact = async (contactId) => {
   const contacts = await listContacts();
   const index = contacts.findIndex((item) => item.id === contactId);
   if (index === -1) {
-    return Error;
+    return;
   }
   contacts.splice(index, 1);
   await fs.writeFile(listPath, JSON.stringify(contacts));

@@ -1,8 +1,5 @@
 const express = require("express");
-const {
-  addContactValidation,
-  putValidation,
-} = require("../../middlewares/validationMiddleware");
+const { bodyValidation } = require("../../middlewares/validationMiddleware");
 
 const {
   listContacts,
@@ -28,7 +25,7 @@ router.get("/:contactId", async (req, res, next) => {
   res.json({ contactById });
 });
 
-router.post("/", addContactValidation, async (req, res, next) => {
+router.post("/", bodyValidation, async (req, res, next) => {
   const addedContact = await addContact(req.body);
   res.status(201).json({ data: { addedContact } });
 });
@@ -36,13 +33,14 @@ router.post("/", addContactValidation, async (req, res, next) => {
 router.delete("/:contactId", async (req, res, next) => {
   const { contactId } = req.params;
   const delelteContact = await removeContact(contactId);
-  if (delelteContact === Error) {
+  console.log(delelteContact);
+  if (!delelteContact) {
     return res.status(404).json({ message: "Not found" });
   }
   res.json({ message: "contact deleted" });
 });
 
-router.put("/:contactId", putValidation, async (req, res, next) => {
+router.put("/:contactId", bodyValidation, async (req, res, next) => {
   const { contactId } = req.params;
   const fixContact = await updateContact(contactId, req.body);
 
