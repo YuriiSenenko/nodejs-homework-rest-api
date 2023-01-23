@@ -1,5 +1,7 @@
 const fs = require("fs/promises");
 const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+
 const listPath = path.resolve("./models/contacts.json");
 
 const listContacts = async () => {
@@ -13,6 +15,9 @@ const getContactById = async (contactId) => {
   const [searchContact] = await contacts.filter(
     (contact) => contact.id === contactId
   );
+  if (searchContact === undefined) {
+    return;
+  }
   return searchContact;
 };
 
@@ -20,19 +25,17 @@ const removeContact = async (contactId) => {
   const contacts = await listContacts();
   const index = contacts.findIndex((item) => item.id === contactId);
   if (index === -1) {
-    console.log("contact is not found");
-    return;
+    return Error;
   }
   contacts.splice(index, 1);
   await fs.writeFile(listPath, JSON.stringify(contacts));
 };
 
 const addContact = async (body) => {
-  const { id, name, email, phone } = body;
-  const newContact = { id, name, email, phone };
+  const { name, email, phone } = body;
+  const newContact = { id: uuidv4(), name, email, phone };
   const contacts = await listContacts();
   contacts.push(newContact);
-
   await fs.writeFile(listPath, JSON.stringify(contacts));
   return newContact;
 };
