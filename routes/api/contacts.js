@@ -1,25 +1,50 @@
-const express = require('express')
+const express = require("express");
+const { bodyValidation } = require("../../middlewares/validationMiddleware");
 
-const router = express.Router()
+const {
+  listContacts,
+  getContactById,
+  removeContact,
+  addContact,
+  updateContact,
+} = require("../../models/contacts");
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const router = express.Router();
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/", async (req, res, next) => {
+  const contacts = await listContacts();
+  res.json({ contacts });
+});
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/:contactId", async (req, res, next) => {
+  const { contactId } = req.params;
+  const contactById = await getContactById(contactId);
+  if (!contactById) {
+    return res.status(404).json({ message: "Not found" });
+  }
+  res.json({ contactById });
+});
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.post("/", bodyValidation, async (req, res, next) => {
+  const addedContact = await addContact(req.body);
+  res.status(201).json({ data: { addedContact } });
+});
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.delete("/:contactId", async (req, res, next) => {
+  const { contactId } = req.params;
+  const delelteContact = await removeContact(contactId);
+  console.log(delelteContact);
+  if (!delelteContact) {
+    return res.status(404).json({ message: "Not found" });
+  }
+  res.json({ message: "contact deleted" });
+});
 
-module.exports = router
+router.put("/:contactId", bodyValidation, async (req, res, next) => {
+  const { contactId } = req.params;
+  const fixContact = await updateContact(contactId, req.body);
+
+  res.json({ data: { fixContact } });
+});
+
+module.exports = router;
