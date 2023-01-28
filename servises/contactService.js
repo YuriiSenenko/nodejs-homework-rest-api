@@ -1,13 +1,12 @@
-const { Contact } = require("../db/postModel");
 const { WrongParametersError } = require("../helpers/errors");
+const { get, getById, add, remove, update } = require("../config");
 
 const getContacts = async () => {
-  const contacts = await Contact.find();
-  return contacts;
+  return get();
 };
 
 const getContactsById = async (contactId) => {
-  const contact = await Contact.findById(contactId);
+  const contact = await getById(contactId);
   if (!contact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }
@@ -16,13 +15,11 @@ const getContactsById = async (contactId) => {
 
 const addContact = async (body) => {
   const { name, email, phone, favorite } = body;
-  const newContact = new Contact({ name, email, phone, favorite });
-  await newContact.save();
-  return newContact;
+  return add(name, email, phone, favorite);
 };
 
 const deleteContactById = async ({ contactId }) => {
-  const contact = await Contact.findByIdAndRemove(contactId);
+  const contact = await remove(contactId);
   if (!contact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }
@@ -36,24 +33,19 @@ const updateContactById = async ({ contactId }, body) => {
     phone,
     favorite,
   };
-  const updateContact = await Contact.findByIdAndUpdate(contactId, {
-    $set: contact,
-  });
-  const fullUpdateContact = await Contact.findById(contactId);
+  const updateContact = await update(contactId, contact);
   if (!updateContact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }
-  return fullUpdateContact;
+  return await getById(contactId);
 };
 
 const updateStatusContact = async ({ contactId }, { favorite }) => {
-  const updateContact = await Contact.findByIdAndUpdate(contactId, {
-    $set: { favorite },
-  });
+  const updateContact = await update(contactId, { favorite });
   if (!updateContact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }
-  return await Contact.findById(contactId);
+  return await getById(contactId);
 };
 
 module.exports = {

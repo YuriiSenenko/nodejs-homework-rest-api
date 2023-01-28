@@ -7,8 +7,6 @@ const {
   deleteContactById,
 } = require("../servises/contactService");
 
-// const { WrongParametersError } = require("../helpers/errors");
-
 const listContactsController = async (req, res, next) => {
   const contacts = await getContacts();
   res.json(contacts);
@@ -22,12 +20,12 @@ const getContactByIdController = async (req, res, next) => {
 
 const addContactController = async (req, res, next) => {
   const newContact = await addContact(req.body);
-  res.status(201).json({ newContact });
+  res.status(201).json(newContact);
 };
 
 const updateContactController = async (req, res, next) => {
   const updatedContact = await updateContactById(req.params, req.body);
-  res.json({ updatedContact });
+  res.json(updatedContact);
 };
 
 const updateStatusContactController = async (req, res, next) => {
