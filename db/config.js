@@ -1,4 +1,4 @@
-const { Contact } = require("./db/postModel");
+const { Contact } = require("./postModel");
 
 const get = async () => {
   return await Contact.find();

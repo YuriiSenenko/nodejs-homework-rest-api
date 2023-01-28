@@ -1,5 +1,5 @@
 const { WrongParametersError } = require("../helpers/errors");
-const { get, getById, add, remove, update } = require("../config");
+const { get, getById, add, remove, update } = require("../db/config");
 
 const getContacts = async () => {
   return get();
