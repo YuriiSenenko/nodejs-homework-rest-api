@@ -2,9 +2,12 @@ const {
   getContacts,
   getContactsById,
   addContact,
-  deleteContactById,
   updateContactById,
+  updateStatusContact,
+  deleteContactById,
 } = require("../servises/contactService");
+
+// const { WrongParametersError } = require("../helpers/errors");
 
 const listContactsController = async (req, res, next) => {
   const contacts = await getContacts();
@@ -14,11 +17,7 @@ const listContactsController = async (req, res, next) => {
 const getContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
   const contact = await getContactsById(contactId);
-  if (!contact) {
-    res.status(404).json({ message: "Not found" });
-    return;
-  }
-  res.json({ contact });
+  res.json(contact);
 };
 
 const addContactController = async (req, res, next) => {
@@ -29,6 +28,12 @@ const addContactController = async (req, res, next) => {
 const updateContactController = async (req, res, next) => {
   const updatedContact = await updateContactById(req.params, req.body);
   res.json({ updatedContact });
+};
+
+const updateStatusContactController = async (req, res, next) => {
+  const changeFavorite = await updateStatusContact(req.params, req.body);
+
+  res.status(200).json({ changeFavorite });
 };
 
 const removeContactController = async (req, res, next) => {
@@ -45,4 +50,5 @@ module.exports = {
   removeContactController,
   addContactController,
   updateContactController,
+  updateStatusContactController,
 };

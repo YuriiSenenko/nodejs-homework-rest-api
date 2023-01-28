@@ -1,12 +1,17 @@
 const express = require("express");
-const { bodyValidation } = require("../../middlewares/validationMiddleware");
+const {
+  bodyValidation,
+  statusValidation,
+  bodyValidationForUpdate,
+} = require("../../middlewares/validationMiddleware");
 
 const {
   listContactsController,
   getContactByIdController,
-  removeContactController,
   addContactController,
   updateContactController,
+  updateStatusContactController,
+  removeContactController,
 } = require("../../controllers/postController");
 
 const { asyncWrapper } = require("../../helpers/apiHelpers");
@@ -17,8 +22,13 @@ router.get("/:contactId", asyncWrapper(getContactByIdController));
 router.post("/", bodyValidation, asyncWrapper(addContactController));
 router.put(
   "/:contactId",
-  bodyValidation,
+  bodyValidationForUpdate,
   asyncWrapper(updateContactController)
+);
+router.patch(
+  "/:contactId/favorite",
+  statusValidation,
+  asyncWrapper(updateStatusContactController)
 );
 router.delete("/:contactId", asyncWrapper(removeContactController));
 
