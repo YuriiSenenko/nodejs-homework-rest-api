@@ -1,50 +1,35 @@
 const express = require("express");
-const { bodyValidation } = require("../../middlewares/validationMiddleware");
+const {
+  bodyValidation,
+  statusValidation,
+  bodyValidationForUpdate,
+} = require("../../middlewares/validationMiddleware");
 
 const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-} = require("../../models/contacts");
+  getlistContactsController,
+  getContactByIdController,
+  addContactController,
+  updateContactController,
+  updateStatusContactController,
+  removeContactController,
+} = require("../../controllers/postController");
 
+const { asyncWrapper } = require("../../helpers/apiHelpers");
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
-  const contacts = await listContacts();
-  res.json({ contacts });
-});
-
-router.get("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params;
-  const contactById = await getContactById(contactId);
-  if (!contactById) {
-    return res.status(404).json({ message: "Not found" });
-  }
-  res.json({ contactById });
-});
-
-router.post("/", bodyValidation, async (req, res, next) => {
-  const addedContact = await addContact(req.body);
-  res.status(201).json({ data: { addedContact } });
-});
-
-router.delete("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params;
-  const delelteContact = await removeContact(contactId);
-  console.log(delelteContact);
-  if (!delelteContact) {
-    return res.status(404).json({ message: "Not found" });
-  }
-  res.json({ message: "contact deleted" });
-});
-
-router.put("/:contactId", bodyValidation, async (req, res, next) => {
-  const { contactId } = req.params;
-  const fixContact = await updateContact(contactId, req.body);
-
-  res.json({ data: { fixContact } });
-});
+router.get("/", asyncWrapper(getlistContactsController));
+router.get("/:contactId", asyncWrapper(getContactByIdController));
+router.post("/", bodyValidation, asyncWrapper(addContactController));
+router.put(
+  "/:contactId",
+  bodyValidationForUpdate,
+  asyncWrapper(updateContactController)
+);
+router.patch(
+  "/:contactId/favorite",
+  statusValidation,
+  asyncWrapper(updateStatusContactController)
+);
+router.delete("/:contactId", asyncWrapper(removeContactController));
 
 module.exports = router;
