@@ -1,23 +1,23 @@
 const { Contact } = require("./postModel");
 
-const getContact = () => {
+const getContact = async () => {
   return Contact.find();
 };
 
-const findContactById = (contactId) => {
+const findContactById = async (contactId) => {
   return Contact.findById(contactId);
 };
 
-const createContact = (name, email, phone, favorite) => {
+const createContact = async (name, email, phone, favorite) => {
   const newContact = new Contact({ name, email, phone, favorite });
   return newContact.save();
 };
 
-const removeContact = (contactId) => {
+const removeContact = async (contactId) => {
   return Contact.findByIdAndRemove(contactId);
 };
 
-const updateContact = (contactId, data) => {
+const updateContact = async (contactId, data) => {
   return Contact.findByIdAndUpdate(contactId, {
     $set: data,
   });
