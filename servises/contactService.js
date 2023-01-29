@@ -1,12 +1,18 @@
 const { WrongParametersError } = require("../helpers/errors");
-const { get, getById, add, remove, update } = require("../db/config");
+const {
+  getContact,
+  findContactById,
+  createContact,
+  removeContact,
+  updateContact,
+} = require("../db/config");
 
 const getContacts = async () => {
-  return get();
+  return getContact();
 };
 
 const getContactsById = async (contactId) => {
-  const contact = await getById(contactId);
+  const contact = await findContactById(contactId);
   if (!contact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }
@@ -15,11 +21,11 @@ const getContactsById = async (contactId) => {
 
 const addContact = async (body) => {
   const { name, email, phone, favorite } = body;
-  return add(name, email, phone, favorite);
+  return createContact(name, email, phone, favorite);
 };
 
 const deleteContactById = async ({ contactId }) => {
-  const contact = await remove(contactId);
+  const contact = await removeContact(contactId);
   if (!contact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }
@@ -33,19 +39,19 @@ const updateContactById = async ({ contactId }, body) => {
     phone,
     favorite,
   };
-  const updateContact = await update(contactId, contact);
-  if (!updateContact) {
+  const editContact = await updateContact(contactId, contact);
+  if (!editContact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }
-  return await getById(contactId);
+  return await findContactById(contactId);
 };
 
 const updateStatusContact = async ({ contactId }, { favorite }) => {
-  const updateContact = await update(contactId, { favorite });
-  if (!updateContact) {
+  const editContact = await updateContact(contactId, { favorite });
+  if (!editContact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }
-  return await getById(contactId);
+  return await findContactById(contactId);
 };
 
 module.exports = {

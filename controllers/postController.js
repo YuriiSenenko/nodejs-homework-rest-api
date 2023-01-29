@@ -7,7 +7,7 @@ const {
   deleteContactById,
 } = require("../servises/contactService");
 
-const listContactsController = async (req, res, next) => {
+const getlistContactsController = async (req, res, next) => {
   const contacts = await getContacts();
   res.json(contacts);
 };
@@ -43,7 +43,7 @@ const removeContactController = async (req, res, next) => {
 };
 
 module.exports = {
-  listContactsController,
+  getlistContactsController,
   getContactByIdController,
   removeContactController,
   addContactController,

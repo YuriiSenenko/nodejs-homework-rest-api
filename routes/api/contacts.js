@@ -6,7 +6,7 @@ const {
 } = require("../../middlewares/validationMiddleware");
 
 const {
-  listContactsController,
+  getlistContactsController,
   getContactByIdController,
   addContactController,
   updateContactController,
@@ -17,7 +17,7 @@ const {
 const { asyncWrapper } = require("../../helpers/apiHelpers");
 const router = express.Router();
 
-router.get("/", asyncWrapper(listContactsController));
+router.get("/", asyncWrapper(getlistContactsController));
 router.get("/:contactId", asyncWrapper(getContactByIdController));
 router.post("/", bodyValidation, asyncWrapper(addContactController));
 router.put(

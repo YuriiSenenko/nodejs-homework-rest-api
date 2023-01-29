@@ -1,26 +1,32 @@
 const { Contact } = require("./postModel");
 
-const get = async () => {
-  return await Contact.find();
+const getContact = () => {
+  return Contact.find();
 };
 
-const getById = async (contactId) => {
-  return await Contact.findById(contactId);
+const findContactById = (contactId) => {
+  return Contact.findById(contactId);
 };
 
-const add = async (name, email, phone, favorite) => {
+const createContact = (name, email, phone, favorite) => {
   const newContact = new Contact({ name, email, phone, favorite });
-  return await newContact.save();
+  return newContact.save();
 };
 
-const remove = async (contactId) => {
-  return await Contact.findByIdAndRemove(contactId);
+const removeContact = (contactId) => {
+  return Contact.findByIdAndRemove(contactId);
 };
 
-const update = async (contactId, data) => {
-  return await Contact.findByIdAndUpdate(contactId, {
+const updateContact = (contactId, data) => {
+  return Contact.findByIdAndUpdate(contactId, {
     $set: data,
   });
 };
 
-module.exports = { get, getById, add, remove, update };
+module.exports = {
+  getContact,
+  findContactById,
+  createContact,
+  removeContact,
+  updateContact,
+};
