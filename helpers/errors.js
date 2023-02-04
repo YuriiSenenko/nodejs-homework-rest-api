@@ -1,14 +1,33 @@
-class ValidationError extends Error {
+class ContactListError extends Error {
   constructor(message) {
     super(message);
     this.status = 400;
   }
 }
 
-class WrongParametersError extends Error {
+class WrongParametersError extends ContactListError {
   constructor(message) {
     super(message);
     this.status = 404;
   }
 }
-module.exports = { ValidationError, WrongParametersError };
+
+class NotAutorizedError extends ContactListError {
+  constructor(message) {
+    super(message);
+    this.status = 401;
+  }
+}
+
+class ConflictAutorizedError extends ContactListError {
+  constructor(message) {
+    super(message);
+    this.status = 409;
+  }
+}
+module.exports = {
+  ContactListError,
+  WrongParametersError,
+  NotAutorizedError,
+  ConflictAutorizedError,
+};

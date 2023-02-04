@@ -8,34 +8,59 @@ const {
 } = require("../servises/contactService");
 
 const getlistContactsController = async (req, res, next) => {
-  const contacts = await getContacts();
+  const { favorite, page, limit } = req.query;
+
+  const { _id: owner } = req.user;
+  const contacts = await getContacts(owner, { favorite, page, limit });
   res.json(contacts);
 };
 
 const getContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await getContactsById(contactId);
+  const { _id: owner } = req.user;
+  const contact = await getContactsById(contactId, owner);
   res.json(contact);
 };
 
 const addContactController = async (req, res, next) => {
-  const newContact = await addContact(req.body);
+  const { name, email, phone, favorite } = req.body;
+  const { _id: owner } = req.user;
+  const newContact = await addContact(name, email, phone, favorite, owner);
   res.status(201).json(newContact);
 };
 
 const updateContactController = async (req, res, next) => {
-  const updatedContact = await updateContactById(req.params, req.body);
+  const { contactId } = req.params;
+  const { name, email, phone, favorite } = req.body;
+  const { _id: owner } = req.user;
+  const updatedContact = await updateContactById(
+    contactId,
+    name,
+    email,
+    phone,
+    favorite,
+    owner
+  );
   res.json(updatedContact);
 };
 
 const updateStatusContactController = async (req, res, next) => {
-  const changeFavorite = await updateStatusContact(req.params, req.body);
+  const { contactId } = req.params;
+  const { favorite } = req.body;
+  const { _id: owner } = req.user;
+  const changeFavorite = await updateStatusContact(
+    contactId,
+    { favorite },
+    owner
+  );
 
   res.status(200).json({ changeFavorite });
 };
 
 const removeContactController = async (req, res, next) => {
-  const delelteContact = await deleteContactById(req.params);
+  const { contactId } = req.params;
+  const { _id: owner } = req.user;
+  const delelteContact = await deleteContactById(contactId, owner);
   if (delelteContact === null) {
     return res.status(404).json({ message: "Not found" });
   }

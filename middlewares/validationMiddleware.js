@@ -1,10 +1,10 @@
 const Joi = require("joi");
-const { ValidationError } = require("../helpers/errors");
+const { ContactListError } = require("../helpers/errors");
 
 module.exports = {
   bodyValidation: (req, res, next) => {
     const schema = Joi.object({
-      name: Joi.string().alphanum().min(3).max(30).required(),
+      name: Joi.string().min(3).max(30).required(),
       email: Joi.string()
         .email({
           minDomainSegments: 2,
@@ -18,14 +18,14 @@ module.exports = {
     });
     const validationResult = schema.validate(req.body);
     if (validationResult.error) {
-      next(new ValidationError(validationResult.error.message));
+      next(new ContactListError(validationResult.error.message));
     }
     next();
   },
 
   bodyValidationForUpdate: (req, res, next) => {
     const schema = Joi.object({
-      name: Joi.string().alphanum().min(3).max(30),
+      name: Joi.string().min(3).max(30),
       email: Joi.string().email({
         minDomainSegments: 2,
         tlds: { allow: ["com", "net"] },
@@ -37,7 +37,7 @@ module.exports = {
     });
     const validationResult = schema.validate(req.body);
     if (validationResult.error) {
-      next(new ValidationError(validationResult.error.message));
+      next(new ContactListError(validationResult.error.message));
     }
     next();
   },
@@ -48,7 +48,25 @@ module.exports = {
     });
     const validationResult = schema.validate(req.body);
     if (validationResult.error) {
-      next(new ValidationError(validationResult.error.message));
+      next(new ContactListError(validationResult.error.message));
+    }
+    next();
+  },
+
+  userValidation: (req, res, next) => {
+    const schema = Joi.object({
+      email: Joi.string()
+        .email({
+          minDomainSegments: 2,
+          tlds: { allow: ["com", "net"] },
+        })
+        .required(),
+      password: Joi.string().required(),
+      subscription: Joi.string(),
+    });
+    const validationResult = schema.validate(req.body);
+    if (validationResult.error) {
+      next(new ContactListError(validationResult.error.message));
     }
     next();
   },

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+// const {user}=require("../servises/authService")
 
 const contactSchema = new mongoose.Schema({
   name: {
@@ -15,6 +16,10 @@ const contactSchema = new mongoose.Schema({
   favorite: {
     type: Boolean,
     default: false,
+  },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
   },
 });
 
