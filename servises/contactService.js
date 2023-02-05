@@ -62,7 +62,6 @@ const updateStatusContact = async (contactId, { favorite }, owner) => {
 
 const deleteContactById = async (contactId, owner) => {
   const contact = await Contact.findOneAndRemove({ _id: contactId, owner });
-
   if (!contact) {
     throw new WrongParametersError(`Contact with id ${contactId} not found`);
   }

@@ -4,11 +4,11 @@ const { User } = require("../db/userModel");
 
 const authMiddleware = async (req, res, next) => {
   if (!req.headers.authorization) {
-    next(new NotAutorizedError("No token"));
+    next(new NotAutorizedError("Not authorized"));
     return;
   }
   const [tokenType, token] = req.headers.authorization.split(" ");
-  
+
   if (!token) {
     next(new NotAutorizedError("Not authorized"));
   }

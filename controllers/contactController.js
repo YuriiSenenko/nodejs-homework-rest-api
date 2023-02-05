@@ -53,7 +53,6 @@ const updateStatusContactController = async (req, res, next) => {
     { favorite },
     owner
   );
-
   res.status(200).json({ changeFavorite });
 };
 
