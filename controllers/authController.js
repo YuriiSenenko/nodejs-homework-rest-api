@@ -4,11 +4,15 @@ const {
   logoutUser,
   currentUser,
   updateUserSubscription,
+  editUserAvatar,
 } = require("../servises/authService");
+const gravatar = require("gravatar");
+const path = require("path");
 
 const registrationUserController = async (req, res, next) => {
   const { email, password, subscription } = req.body;
-  const user = await registrationUser(email, password, subscription);
+  const avatarUrl = gravatar.url(email);
+  const user = await registrationUser(email, password, subscription, avatarUrl);
   res.status(201).json({ user });
 };
 
@@ -38,10 +42,20 @@ const updateUserSubscriptionController = async (req, res, next) => {
   res.status(200).json(newSubscription);
 };
 
+const editUserAvatarController = async (req, res, next) => {
+  const { _id: id } = req.user;
+  const { path: tmpUpload, originalname } = req.file;
+  const avatarURL = path.join("public", "avatars", `${id}_${originalname}`);
+
+  const result = await editUserAvatar(tmpUpload, id, avatarURL);
+  res.status(200).json(result);
+};
+
 module.exports = {
   registrationUserController,
   loginController,
   logoutController,
   currentController,
   updateUserSubscriptionController,
+  editUserAvatarController,
 };
