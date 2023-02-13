@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const fs = require("fs/promises");
+const Jimp = require("jimp");
 
 const {
   NotAutorizedError,
@@ -8,15 +10,20 @@ const {
 const { User } = require("../db/userModel");
 const bcrypt = require("bcrypt");
 
-const registrationUser = async (email, password, subscription) => {
+const registrationUser = async (email, password, subscription, avatarURL) => {
   try {
     const user = new User({
       email,
       password,
       subscription,
+      avatarURL,
     });
     await user.save();
-    return { email: user.email, subscription: user.subscription };
+    return {
+      email: user.email,
+      subscription: user.subscription,
+      avatar: avatarURL,
+    };
   } catch (error) {
     throw new ConflictAutorizedError(`Email '${email}' in use`);
   }
@@ -65,10 +72,29 @@ const updateUserSubscription = async (id, subscription) => {
   return { user: user.email, subscription: user.subscription };
 };
 
+const editUserAvatar = async (tmpUpload, pathAvatar, id, avatarURL) => {
+  try {
+    await Jimp.read(tmpUpload).then((image) => {
+      image.resize(250, 250).write(tmpUpload);
+    });
+    await fs.rename(tmpUpload, pathAvatar);
+    const user = await User.findByIdAndUpdate(id, { avatarURL });
+
+    if (!user) {
+      throw new WrongParametersError(`Contact with id ${id} not found`);
+    }
+    return { avatarURL };
+  } catch (error) {
+    await fs.unlink(tmpUpload);
+    return error.message;
+  }
+};
+
 module.exports = {
   registrationUser,
   loginUser,
   logoutUser,
   currentUser,
   updateUserSubscription,
+  editUserAvatar,
 };
