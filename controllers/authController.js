@@ -18,6 +18,7 @@ const registrationUserController = async (req, res, next) => {
 
 const loginController = async (req, res, next) => {
   const { email, password } = req.body;
+  console.log(email, password);
   const user = await loginUser(email, password);
   res.status(200).json(user);
 };
@@ -45,9 +46,15 @@ const updateUserSubscriptionController = async (req, res, next) => {
 const editUserAvatarController = async (req, res, next) => {
   const { _id: id } = req.user;
   const { path: tmpUpload, originalname } = req.file;
-  const avatarURL = path.join("public", "avatars", `${id}_${originalname}`);
+  const pathAvatar = path.join("public", "avatars", `${id}_${originalname}`);
+  const avatarURL = path.join(
+    "http://localhost:",
+    process.env.PORT,
+    "avatars",
+    `${id}_${originalname}`
+  );
 
-  const result = await editUserAvatar(tmpUpload, id, avatarURL);
+  const result = await editUserAvatar(tmpUpload, pathAvatar, id, avatarURL);
   res.status(200).json(result);
 };
 
