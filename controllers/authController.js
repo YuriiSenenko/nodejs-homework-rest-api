@@ -52,7 +52,6 @@ const editUserAvatarController = async (req, res, next) => {
     "avatars",
     `${id}_${originalname}`
   );
-  console.log(avatarURL);
 
   const result = await editUserAvatar(tmpUpload, pathAvatar, id, avatarURL);
   res.status(200).json(result);
