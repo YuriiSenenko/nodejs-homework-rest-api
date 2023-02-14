@@ -46,14 +46,15 @@ const updateUserSubscriptionController = async (req, res, next) => {
 const editUserAvatarController = async (req, res, next) => {
   const { _id: id } = req.user;
   const { path: tmpUpload, originalname } = req.file;
-  const pathAvatar = path.join("public", "avatars", `${id}_${originalname}`);
   const avatarURL = path.join(
-    `http://localhost:${process.env.PORT}`,
+    __dirname,
+    "../",
+    "public",
     "avatars",
     `${id}_${originalname}`
   );
 
-  const result = await editUserAvatar(tmpUpload, pathAvatar, id, avatarURL);
+  const result = await editUserAvatar(tmpUpload, id, avatarURL);
   res.status(200).json(result);
 };
 
