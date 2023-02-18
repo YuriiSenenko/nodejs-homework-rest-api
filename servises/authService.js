@@ -1,8 +1,17 @@
 const jwt = require("jsonwebtoken");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
+// require("dotenv").config();
+const { v4: uuidv4 } = require("uuid");
+const {
+  sendingVerificationEmail,
+  sendingConfirmationOfSuccessfulVerification,
+} = require("../helpers/emailValidation");
+// const sgMail = require("@sendgrid/mail");
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const {
+  ContactListError,
   NotAutorizedError,
   ConflictAutorizedError,
   WrongParametersError,
@@ -10,15 +19,25 @@ const {
 const { User } = require("../db/userModel");
 const bcrypt = require("bcrypt");
 
-const registrationUser = async (email, password, subscription, avatarURL) => {
+const registrationUser = async (
+  email,
+  password,
+  subscription,
+  avatarURL,
+  verify
+) => {
   try {
     const user = new User({
       email,
       password,
       subscription,
       avatarURL,
+      verify,
+      verificationToken: uuidv4(),
     });
     await user.save();
+    await sendingVerificationEmail(user.email, user.verificationToken);
+
     return {
       email: user.email,
       subscription: user.subscription,
@@ -29,8 +48,39 @@ const registrationUser = async (email, password, subscription, avatarURL) => {
   }
 };
 
-const loginUser = async (email, password) => {
+const verification = async (verificationToken) => {
+  const user = await User.findOne({ verificationToken, verify: false });
+  if (!user) {
+    throw new WrongParametersError("User not found");
+  }
+
+  user.verificationToken = "null";
+  user.verify = true;
+  await user.save();
+
+  await sendingConfirmationOfSuccessfulVerification(user.email);
+
+  return { message: "Verification successful" };
+};
+
+const reVerification = async (email) => {
+  if (!email) {
+    throw new ContactListError("missing required field email");
+  }
   const user = await User.findOne({ email });
+  if (!user) {
+    throw new WrongParametersError("User not found");
+  }
+  if (user.verify) {
+    throw new ContactListError("Verification has already been passed");
+  }
+  await sendingVerificationEmail(user.email, user.verificationToken);
+
+  return { message: "Verification email sent" };
+};
+
+const loginUser = async (email, password) => {
+  const user = await User.findOne({ email, verify: true });
   if (!user || !(await bcrypt.compare(password, user.password))) {
     throw new NotAutorizedError(`Email or password is wrong`);
   }
@@ -93,6 +143,8 @@ const editUserAvatar = async (tmpUpload, id, avatarURL) => {
 module.exports = {
   registrationUser,
   loginUser,
+  verification,
+  reVerification,
   logoutUser,
   currentUser,
   updateUserSubscription,

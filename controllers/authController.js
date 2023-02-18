@@ -1,6 +1,8 @@
 const {
   registrationUser,
   loginUser,
+  verification,
+  reVerification,
   logoutUser,
   currentUser,
   updateUserSubscription,
@@ -18,9 +20,19 @@ const registrationUserController = async (req, res, next) => {
 
 const loginController = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(email, password);
   const user = await loginUser(email, password);
   res.status(200).json(user);
+};
+
+const verificationController = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const result = await verification(verificationToken);
+  res.status(200).json(result);
+};
+const reVerificationController = async (req, res, next) => {
+  const { email } = req.body;
+  const result = await reVerification(email);
+  res.status(200).json(result);
 };
 
 const logoutController = async (req, res, next) => {
@@ -61,6 +73,8 @@ const editUserAvatarController = async (req, res, next) => {
 module.exports = {
   registrationUserController,
   loginController,
+  verificationController,
+  reVerificationController,
   logoutController,
   currentController,
   updateUserSubscriptionController,
