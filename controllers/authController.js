@@ -1,6 +1,8 @@
 const {
   registrationUser,
   loginUser,
+  verification,
+  reVerification,
   logoutUser,
   currentUser,
   updateUserSubscription,
@@ -8,6 +10,8 @@ const {
 } = require("../servises/authService");
 const gravatar = require("gravatar");
 const path = require("path");
+require("dotenv").config();
+const PORT = process.env.PORT;
 
 const registrationUserController = async (req, res, next) => {
   const { email, password, subscription } = req.body;
@@ -18,9 +22,19 @@ const registrationUserController = async (req, res, next) => {
 
 const loginController = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(email, password);
   const user = await loginUser(email, password);
   res.status(200).json(user);
+};
+
+const verificationController = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const result = await verification(verificationToken);
+  res.status(200).json(result);
+};
+const reVerificationController = async (req, res, next) => {
+  const { email } = req.body;
+  const result = await reVerification(email);
+  res.status(200).json(result);
 };
 
 const logoutController = async (req, res, next) => {
@@ -46,21 +60,19 @@ const updateUserSubscriptionController = async (req, res, next) => {
 const editUserAvatarController = async (req, res, next) => {
   const { _id: id } = req.user;
   const { path: tmpUpload, originalname } = req.file;
-  const pathAvatar = path.join("public", "avatars", `${id}_${originalname}`);
-  const avatarURL = path.join(
-    "http://localhost:",
-    process.env.PORT,
-    "avatars",
-    `${id}_${originalname}`
-  );
+  const newName = `${id}_${originalname}`;
+  const newPath = path.join(__dirname, "../", "public", "avatars", newName);
+  const avatarURL = `http://localhost:${PORT}/avatars/${newName}`;
 
-  const result = await editUserAvatar(tmpUpload, pathAvatar, id, avatarURL);
+  const result = await editUserAvatar(tmpUpload, id, newPath, avatarURL);
   res.status(200).json(result);
 };
 
 module.exports = {
   registrationUserController,
   loginController,
+  verificationController,
+  reVerificationController,
   logoutController,
   currentController,
   updateUserSubscriptionController,
