@@ -64,9 +64,6 @@ const verification = async (verificationToken) => {
 };
 
 const reVerification = async (email) => {
-  if (!email) {
-    throw new ContactListError("missing required field email");
-  }
   const user = await User.findOne({ email });
   if (!user) {
     throw new WrongParametersError("User not found");
@@ -122,12 +119,12 @@ const updateUserSubscription = async (id, subscription) => {
   return { user: user.email, subscription: user.subscription };
 };
 
-const editUserAvatar = async (tmpUpload, id, avatarURL) => {
+const editUserAvatar = async (tmpUpload, id, newPath, avatarURL) => {
   try {
     await Jimp.read(tmpUpload).then((image) => {
       image.resize(250, 250).write(tmpUpload);
     });
-    await fs.rename(tmpUpload, avatarURL);
+    await fs.rename(tmpUpload, newPath);
     const user = await User.findByIdAndUpdate(id, { avatarURL });
 
     if (!user) {

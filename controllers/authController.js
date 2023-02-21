@@ -10,6 +10,8 @@ const {
 } = require("../servises/authService");
 const gravatar = require("gravatar");
 const path = require("path");
+require("dotenv").config();
+const PORT = process.env.PORT;
 
 const registrationUserController = async (req, res, next) => {
   const { email, password, subscription } = req.body;
@@ -58,15 +60,11 @@ const updateUserSubscriptionController = async (req, res, next) => {
 const editUserAvatarController = async (req, res, next) => {
   const { _id: id } = req.user;
   const { path: tmpUpload, originalname } = req.file;
-  const avatarURL = path.join(
-    __dirname,
-    "../",
-    "public",
-    "avatars",
-    `${id}_${originalname}`
-  );
+  const newName = `${id}_${originalname}`;
+  const newPath = path.join(__dirname, "../", "public", "avatars", newName);
+  const avatarURL = `http://localhost:${PORT}/avatars/${newName}`;
 
-  const result = await editUserAvatar(tmpUpload, id, avatarURL);
+  const result = await editUserAvatar(tmpUpload, id, newPath, avatarURL);
   res.status(200).json(result);
 };
 

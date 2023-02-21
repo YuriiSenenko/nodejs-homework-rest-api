@@ -8,7 +8,7 @@ const sendingVerificationEmail = async (email, verificationToken) => {
     from: "yuriisenenko@meta.ua", // Change to your verified sender
     subject: "Please, confirm your email adress",
     text: `Please, confirm your email adress, POST http://localhost:3000/users/verify/${verificationToken}`,
-    html: `Please, confirm your email adress, POST http://localhost:3000/users/verify/${verificationToken}`,
+    html: `Please <a href="http://localhost:3000/users/verify/${verificationToken}">click here</a> to activate email`,
   };
   await sgMail.send(msg);
 };

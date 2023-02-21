@@ -2,7 +2,7 @@ const express = require("express");
 const { asyncWrapper } = require("../../helpers/apiHelpers");
 const {
   userValidation,
-  bodyValidationForUpdate,
+  reVerificationValidation,
 } = require("../../middlewares/validationMiddleware");
 const { authMiddleware } = require("../../middlewares/authMiddleware");
 const { uploadMiddleware } = require("../../middlewares/avatarMiddleware");
@@ -29,7 +29,7 @@ router.get("/login", userValidation, asyncWrapper(loginController));
 router.get("/verify/:verificationToken", asyncWrapper(verificationController));
 router.post(
   "/verify/",
-  bodyValidationForUpdate,
+  reVerificationValidation,
   asyncWrapper(reVerificationController)
 );
 router.post("/logout", authMiddleware, asyncWrapper(logoutController));
